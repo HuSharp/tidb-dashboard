@@ -110,7 +110,7 @@ func (s *Service) GetCalibrateByHardware(c *gin.Context) {
 
 	db := utils.GetTiDBConnection(c)
 	resp := &CalibrateResponse{}
-	err := db.Exec(fmt.Sprintf("calibrate resource")).Scan(resp).Error
+	err := db.Exec(fmt.Sprintf("calibrate resource workload %s", w)).Scan(resp).Error
 	if err != nil {
 		rest.Error(c, err)
 		return
@@ -140,7 +140,7 @@ func (s *Service) GetCalibrateByActual(c *gin.Context) {
 
 	db := utils.GetTiDBConnection(c)
 	resp := &CalibrateResponse{}
-	err := db.Exec(fmt.Sprintf("calibrate resource start_time '%s' end_time '%s'", sTime, eTime)).Scan(resp).Error
+	err := db.Raw(fmt.Sprintf("calibrate resource start_time '%s' end_time '%s'", sTime, eTime)).Scan(resp).Error
 	if err != nil {
 		rest.Error(c, err)
 		return

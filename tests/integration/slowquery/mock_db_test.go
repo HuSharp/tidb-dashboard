@@ -11,7 +11,6 @@ import (
 
 	"github.com/pingcap/tidb-dashboard/pkg/apiserver/slowquery"
 	"github.com/pingcap/tidb-dashboard/pkg/utils"
-	"github.com/pingcap/tidb-dashboard/tests/util"
 	"github.com/pingcap/tidb-dashboard/util/testutil"
 )
 
@@ -36,11 +35,11 @@ func TestMockDBSuite(t *testing.T) {
 }
 
 func (s *testMockDBSuite) SetupSuite() {
-	util.LoadFixtures(s.T(), s.db, "../../fixtures")
+	//util.LoadFixtures(s.T(), s.db, "../../fixtures")
 }
 
 func (s *testMockDBSuite) TearDownSuite() {
-	s.db.MustExec(fmt.Sprintf("DROP TABLE IF EXISTS `%s`", TestSlowQueryTableName))
+	s.db.MustExec(fmt.Sprintf("calibrate resource workload tpcc"))
 	s.db.MustClose()
 	_ = s.sysSchema.Close()
 }
@@ -58,6 +57,29 @@ func (s *testMockDBSuite) mustQuerySlowLogDetail(req *slowquery.GetDetailRequest
 
 func (s *testMockDBSuite) mockDBSession() *gorm.DB {
 	return s.db.Gorm().Debug().Table(TestSlowQueryTableName)
+}
+
+type CalibrateResponse struct {
+	EstimatedCapacity int `json:"estimated_capacity" gorm:"column:QUOTA"`
+}
+
+func (s *testMockDBSuite) TestCheck() {
+
+	db := s.mockDBSession()
+	resp := &CalibrateResponse{EstimatedCapacity: 1}
+	w := "oltp_read_write"
+	err := db.Raw(fmt.Sprintf("calibrate resource workload %s", w)).Scan(resp).Error
+	//err := db.Raw(" calibrate resource start_time '2023-04-19 17:50:00' end_time '2023-04-19 18:10:00'").Scan(resp).Error
+	//println(resp.EstimatedCapacity)
+
+	//err = db.Raw(" calibrate resource ").Scan(resp).Error
+	//w := "tpcc"
+	//err := db.Exec(" calibrate resource workload @Enable", &w).Scan(resp).Error
+	if err != nil {
+		return
+	}
+
+	println(resp.EstimatedCapacity)
 }
 
 func (s *testMockDBSuite) TestGetListDefaultRequest() {
