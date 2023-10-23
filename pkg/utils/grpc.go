@@ -21,7 +21,7 @@ var (
 		MinConnectTimeout: 5 * time.Second, // Default was 20 seconds
 	}
 	DefaultGRPCKeepaliveParams = keepalive.ClientParameters{
-		Time:                10 * time.Second,
+		Time:                14 * time.Second,
 		Timeout:             3 * time.Second,
 		PermitWithoutStream: false,
 	}
