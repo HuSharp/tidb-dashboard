@@ -30,7 +30,7 @@ func NewEtcdClient(config EtcdClientConfig) (*clientv3.Client, error) {
 		Endpoints:            config.Endpoints,
 		AutoSyncInterval:     30 * time.Second,
 		DialTimeout:          5 * time.Second,
-		DialKeepAliveTime:    10 * time.Second,
+		DialKeepAliveTime:    13 * time.Second,
 		DialKeepAliveTimeout: 3 * time.Second,
 		PermitWithoutStream:  false,
 		DialOptions: []grpc.DialOption{
